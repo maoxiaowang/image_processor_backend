@@ -1,0 +1,8 @@
+Django>=5.0.2
+djangorestframework
+djangorestframework-simplejwt
+django-cors-headers
+django-sslserver
+Pillow==10.2.0
+opencv-python==4.9.0.80
+numpy==1.26.4
