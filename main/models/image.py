@@ -7,7 +7,6 @@ from django.utils import timezone
 
 User = get_user_model()
 
-
 IMAGE_PATH = Path('image')
 
 
@@ -34,6 +33,7 @@ class Image(models.Model):
     generation_num = models.PositiveIntegerField(default=0)
     width = models.IntegerField(blank=True, null=True)
     height = models.IntegerField(blank=True, null=True)
+    detected_info = models.CharField(max_length=65535, default='{}')
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 

@@ -1,8 +1,10 @@
+import json
 import uuid
 from pathlib import Path
 
 import cv2
 import numpy as np
+from common.utils.json import NumJsonEncoder
 from django.core.files.base import ContentFile
 from django.utils.translation import gettext_lazy as _
 from rest_framework import serializers
@@ -153,3 +155,29 @@ class BlurImageSerializer(BaseProcessSerializer):
         else:
             raise serializers.ValidationError(f'The value "{mode}" is not a valid mode.')
         return umat
+
+
+class DetectImageSerializer(BaseProcessSerializer):
+
+    def update(self, instance, validated_data):
+        action = self.__class__.__name__.replace('ImageSerializer', '').lower()
+        # 读取文件内容为字节流
+        image_bytes = self.instance.image.read()
+        # 将字节流转换为 numpy 数组
+        np_array = np.frombuffer(image_bytes, dtype=np.uint8)
+        # 将 numpy 数组解码为图像
+        image = cv2.imdecode(np_array, cv2.IMREAD_COLOR)
+
+        info = {
+            'width': self.instance.image.width,
+            'height': self.instance.image.height,
+            'max': np.max(image),
+            'min': np.min(image)
+        }
+
+        instance.detected_info = json.dumps(info, cls=NumJsonEncoder)
+        instance.save()
+        return instance
+
+    def to_representation(self, instance):
+        return ImageSerializer(instance).data

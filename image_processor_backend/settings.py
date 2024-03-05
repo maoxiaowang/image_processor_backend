@@ -71,6 +71,7 @@ CORS_ALLOW_CREDENTIALS = True
 
 CORS_ALLOWED_ORIGINS = [
     'http://localhost:3000',
+    'http://192.168.81.168:3000'
 ]
 
 CORS_ALLOW_HEADERS = list(default_headers) + ['Set-Cookie']
@@ -153,10 +154,10 @@ SIMPLE_JWT = {
     "AUTH_COOKIE_ACCESS": "access_token",  # cookie name
     "AUTH_COOKIE_REFRESH": "refresh_token",
     "AUTH_COOKIE_DOMAIN": None,
-    "AUTH_COOKIE_SECURE": True,
+    "AUTH_COOKIE_SECURE": False,
     "AUTH_COOKIE_HTTP_ONLY": True,
     "AUTH_COOKIE_PATH": "/",
-    "AUTH_COOKIE_SAMESITE": 'None'
+    "AUTH_COOKIE_SAMESITE": 'Lax'
 }
 
 
