@@ -55,7 +55,7 @@ class ImageCreateUpdateSerializer(serializers.ModelSerializer):
     def validate_image(self, image):
         try:
             thumbnail = generate_thumbnail(image)
-        except Exception as e:
+        except Exception:
             # log here
             raise serializers.ValidationError(
                 _('Upload a valid image. The file you uploaded was '
@@ -160,7 +160,6 @@ class BlurImageSerializer(BaseProcessSerializer):
 class DetectImageSerializer(BaseProcessSerializer):
 
     def update(self, instance, validated_data):
-        action = self.__class__.__name__.replace('ImageSerializer', '').lower()
         # 读取文件内容为字节流
         image_bytes = self.instance.image.read()
         # 将字节流转换为 numpy 数组

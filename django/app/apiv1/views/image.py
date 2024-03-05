@@ -1,4 +1,3 @@
-from django.utils.crypto import get_random_string
 from rest_framework import generics, status
 from rest_framework.exceptions import ValidationError
 from rest_framework.response import Response

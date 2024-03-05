@@ -1,0 +1,50 @@
+version: '3.8'
+name: image-processor
+
+services:
+  django:
+    container_name: image-django
+    build:
+      context: ./django/app
+      dockerfile: Dockerfile
+    network_mode: host
+    restart: always
+    command: uvicorn image_processor_backend.asgi:application --host 0.0.0.0 --port 9005 --workers 5 --lifespan off
+    volumes:
+      - django_media:/home/app/django/mediafiles
+      - django_migrations:/home/app/django/main/migrations
+      - django_data:/home/app/django/data
+    expose:
+      - 9005
+    env_file:
+      - ./django/.env
+    environment:
+      - TZ=Asia/Shanghai
+
+  nginx:
+    container_name: image-nginx
+    build:
+      context: ./nginx
+      dockerfile: Dockerfile
+    network_mode: host
+    restart: always
+    volumes:
+      - nginx_logs:/var/log/nginx
+      - django_media:/home/app/django/media
+      - /home/pythonCode/image_frontend/build:/home/app/react
+    environment:
+      - TZ=Asia/Shanghai
+    ports:
+      - "8001:80"
+    depends_on:
+      - django
+
+volumes:
+  django_media:
+    name: image_django_media
+  django_migrations:
+    name: image_django_migrations
+  django_data:
+    name: image_django_data
+  nginx_logs:
+    name: image_nginx_logs

@@ -52,10 +52,7 @@ def resize_image(image_file, width: int = None, height: int = None, quality=75) 
 
     if width > img_width or height > img_height:
         # 目标宽/高大于原始图片宽高，无法缩小
-        try:
-            width, height = img_width, img_height
-        except Exception as e:
-            raise
+        width, height = img_width, img_height
 
     # 调整比例
     img_wh_ratio = img_width / img_height

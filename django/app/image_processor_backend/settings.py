@@ -14,10 +14,14 @@ Including another URLconf
     1. Import the include() function: from django.urls import include, path
     2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
 """
+import os
 from datetime import timedelta
 from pathlib import Path
+from dotenv import load_dotenv
 
 from corsheaders.defaults import default_headers
+
+load_dotenv()
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -27,13 +31,12 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # See https://docs.djangoproject.com/en/4.2/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'django-insecure-e3q1bfl132$&x=ce#gq_-6c)5misw+17e1pkk^mf7lp-a+%so='
+SECRET_KEY = os.environ['DJANGO_SECRET_KEY']
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = bool(int(os.environ.get('DJANGO_DEBUG', default=0)))
 
-ALLOWED_HOSTS = ['*']
-
+ALLOWED_HOSTS = os.environ.get('DJANGO_ALLOWED_HOSTS', '*').split(' ')
 
 # Application definition
 
@@ -41,7 +44,6 @@ INSTALLED_APPS = [
     'apiv1.apps.Apiv1Config',
     'main.apps.MainConfig',
     'corsheaders',
-    'sslserver',
     'rest_framework',
     'django.contrib.admin',
     'django.contrib.auth',
@@ -63,16 +65,10 @@ MIDDLEWARE = [
 ]
 
 SECURE_CROSS_ORIGIN_OPENER_POLICY = None
-CSRF_TRUSTED_ORIGINS = [
-    'http://localhost:3000',
-]
 
 CORS_ALLOW_CREDENTIALS = True
 
-CORS_ALLOWED_ORIGINS = [
-    'http://localhost:3000',
-    'http://192.168.81.168:3000'
-]
+CORS_ALLOWED_ORIGINS = os.environ.get('DJANGO_TRUSTED_ORIGINS', '').split(' ')
 
 CORS_ALLOW_HEADERS = list(default_headers) + ['Set-Cookie']
 
@@ -81,8 +77,7 @@ ROOT_URLCONF = 'image_processor_backend.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [BASE_DIR / 'templates']
-        ,
+        'DIRS': [BASE_DIR / 'templates'],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
@@ -96,16 +91,16 @@ TEMPLATES = [
 ]
 
 WSGI_APPLICATION = 'image_processor_backend.wsgi.application'
-
+ASGI_APPLICATION = 'image_processor_backend.asgi_application'
 
 # Database
 # https://docs.djangoproject.com/en/4.2/ref/settings/#databases
 
 DATABASES = {
     'default': {
-        'ATOMIC_REQUESTS': True,
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
+        'ATOMIC_REQUESTS': bool(int(os.environ.get('DB_ATOMIC_REQUESTS', default=0))),
+        'ENGINE': os.environ.get('DB_ENGINE'),
+        'NAME': BASE_DIR / 'data' / 'db.sqlite3',
     }
 }
 

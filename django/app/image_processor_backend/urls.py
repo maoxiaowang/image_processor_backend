@@ -33,7 +33,7 @@ class CommaSeparatedIntegerListConverter:
 register_converter(CommaSeparatedIntegerListConverter, 'comma_ints')
 
 urlpatterns = [
-    path('admin/', admin.site.urls),
+    # path('admin/', admin.site.urls),
     path('api/v1/', include(('apiv1.urls', 'apiv1'), namespace='apiv1')),
 ]
 
