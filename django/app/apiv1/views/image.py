@@ -1,11 +1,11 @@
 from django.db.models import Q
 from rest_framework import generics, status
-from rest_framework.exceptions import ValidationError, PermissionDenied
+from rest_framework.exceptions import ValidationError
 from rest_framework.response import Response
 
 from apiv1.serializers import image as image_serializers
 from apiv1.utils import generate_thumbnail
-from apiv1.views.mixin import SingleObjectIdentityCheckMixin, MultipleObjectsIdentityCheckMixin
+from apiv1.views.mixin import MultipleObjectsIdentityCheckMixin
 from common.views.mixins import CreateMixin, UpdateMixin
 from main.models.image import Image, ImageGeneration
 
