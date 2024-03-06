@@ -1,17 +1,24 @@
+from django.db.models import Q
 from rest_framework import generics, status
-from rest_framework.exceptions import ValidationError
+from rest_framework.exceptions import ValidationError, PermissionDenied
 from rest_framework.response import Response
 
 from apiv1.serializers import image as image_serializers
 from apiv1.utils import generate_thumbnail
+from apiv1.views.mixin import SingleObjectIdentityCheckMixin, MultipleObjectsIdentityCheckMixin
 from common.views.mixins import CreateMixin, UpdateMixin
 from main.models.image import Image, ImageGeneration
 
 
 class ListCreateImageView(CreateMixin, generics.ListCreateAPIView):
     queryset = Image.objects.all()
-    create_serializer_class = image_serializers.ImageCreateUpdateSerializer
+    create_serializer_class = image_serializers.ImageCreateSerializer
     serializer_class = image_serializers.ImageSerializer
+
+    def get_queryset(self):
+        return Image.objects.filter(
+            Q(user=self.request.user) | Q(is_public=True)
+        )
 
     def create(self, request, *args, **kwargs):
         serializer = self.get_serializer(data=request.data)
@@ -23,14 +30,14 @@ class ListCreateImageView(CreateMixin, generics.ListCreateAPIView):
 
 class RetrieveUpdateDestroyImageView(UpdateMixin, generics.RetrieveUpdateDestroyAPIView):
     queryset = Image.objects.all()
-    create_serializer_class = image_serializers.ImageCreateUpdateSerializer
+    update_serializer_class = image_serializers.ImageUpdateSerializer
     serializer_class = image_serializers.NestedImageSerializer
 
     def perform_destroy(self, instance):
         return super().perform_destroy(instance)
 
 
-class DeleteMultiImageView(generics.DestroyAPIView):
+class DeleteMultiImageView(MultipleObjectsIdentityCheckMixin, generics.DestroyAPIView):
     queryset = Image.objects.all()
 
     def delete(self, request, *args, **kwargs):

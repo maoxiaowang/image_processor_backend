@@ -1,5 +1,3 @@
-
-
 class UpdateMixin:
     update_serializer_class = None
 

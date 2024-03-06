@@ -12,6 +12,7 @@ from rest_framework import serializers
 from apiv1.serializers import UserSerializer
 from apiv1.utils import generate_thumbnail
 from main.models.image import Image, ImageGeneration
+from rest_framework.exceptions import PermissionDenied
 
 
 class ImageSerializer(serializers.ModelSerializer):
@@ -44,13 +45,13 @@ class NestedImageGenerationSerializer(serializers.ModelSerializer):
         fields = '__all__'
 
 
-class ImageCreateUpdateSerializer(serializers.ModelSerializer):
+class ImageCreateSerializer(serializers.ModelSerializer):
     user = serializers.HiddenField(default=serializers.CurrentUserDefault())
     thumbnail = serializers.ImageField(required=False)
 
     class Meta:
         model = Image
-        fields = ('name', 'image', 'thumbnail', 'user')
+        fields = ('name', 'image', 'thumbnail', 'is_public', 'user')
 
     def validate_image(self, image):
         try:
@@ -67,6 +68,18 @@ class ImageCreateUpdateSerializer(serializers.ModelSerializer):
     def validate(self, attrs):
         attrs['thumbnail'] = self.thumbnail
         return attrs
+
+
+class ImageUpdateSerializer(serializers.ModelSerializer):
+
+    def validate(self, attrs):
+        if self.context['request'].user != self.instance.user:
+            raise PermissionDenied
+        return attrs
+
+    class Meta:
+        model = Image
+        fields = ('name', 'is_public')
 
 
 class BaseProcessSerializer(serializers.Serializer):

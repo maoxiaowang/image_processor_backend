@@ -31,6 +31,7 @@ class Image(models.Model):
     thumbnail = models.ImageField(upload_to=thumbnail_upload_to)
     generated_action = models.CharField(max_length=32, null=True, blank=True)
     generation_num = models.PositiveIntegerField(default=0)
+    is_public = models.BooleanField(default=False)
     width = models.IntegerField(blank=True, null=True)
     height = models.IntegerField(blank=True, null=True)
     detected_info = models.CharField(max_length=65535, default='{}')
