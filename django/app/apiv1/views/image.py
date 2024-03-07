@@ -1,3 +1,5 @@
+import time
+
 from django.db.models import Q
 from rest_framework import generics, status
 from rest_framework.exceptions import ValidationError
@@ -16,6 +18,7 @@ class ListCreateImageView(CreateMixin, generics.ListCreateAPIView):
     serializer_class = image_serializers.ImageSerializer
 
     def get_queryset(self):
+        time.sleep(1)
         return Image.objects.filter(
             Q(user=self.request.user) | Q(is_public=True)
         )
@@ -40,9 +43,12 @@ class RetrieveUpdateDestroyImageView(UpdateMixin, generics.RetrieveUpdateDestroy
 class DeleteMultiImageView(MultipleObjectsIdentityCheckMixin, generics.DestroyAPIView):
     queryset = Image.objects.all()
 
+    def get_queryset(self):
+        image_ids = self.kwargs['image_ids']
+        return Image.objects.filter(id__in=image_ids)
+
     def delete(self, request, *args, **kwargs):
-        image_ids = kwargs['image_ids']
-        images = Image.objects.filter(id__in=image_ids)
+        images = self.get_queryset()
         for image in images:
             # Delete associated files
             image.image.delete(save=False)

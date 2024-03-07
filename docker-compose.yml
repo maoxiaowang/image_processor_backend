@@ -11,7 +11,7 @@ services:
     restart: always
     command: uvicorn image_processor_backend.asgi:application --host 0.0.0.0 --port 9005 --workers 5 --lifespan off
     volumes:
-      - django_media:/home/app/django/mediafiles
+      - django_media:/home/app/django/media
       - django_migrations:/home/app/django/main/migrations
       - django_data:/home/app/django/data
     expose:
